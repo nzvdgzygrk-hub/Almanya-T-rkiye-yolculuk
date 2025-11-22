@@ -1,1 +1,0 @@
-# Almanya-T-rkiye-yolculuk
