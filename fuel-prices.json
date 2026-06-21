@@ -1,0 +1,15 @@
+{
+  "updated_at": null,
+  "source": "EU: European Commission Weekly Oil Bulletin. Turkey: optional API/manual value needed.",
+  "status": "waiting_for_first_update",
+  "unit": "EUR/L",
+  "note": "Diese Datei wird durch .github/workflows/update-fuel-prices.yml automatisch aktualisiert. Solange updated_at null ist, liegen noch keine Livewerte vor.",
+  "countries": [
+    { "code": "DE", "country": "Deutschland", "diesel_eur": null, "gasoline95_eur": null, "source": "European Commission Weekly Oil Bulletin" },
+    { "code": "AT", "country": "Österreich", "diesel_eur": null, "gasoline95_eur": null, "source": "European Commission Weekly Oil Bulletin" },
+    { "code": "HU", "country": "Ungarn", "diesel_eur": null, "gasoline95_eur": null, "source": "European Commission Weekly Oil Bulletin" },
+    { "code": "RO", "country": "Rumänien", "diesel_eur": null, "gasoline95_eur": null, "source": "European Commission Weekly Oil Bulletin" },
+    { "code": "BG", "country": "Bulgarien", "diesel_eur": null, "gasoline95_eur": null, "source": "European Commission Weekly Oil Bulletin" },
+    { "code": "TR", "country": "Türkei", "diesel_eur": null, "gasoline95_eur": null, "source": "Keine freie offizielle EU-Quelle; optional über TURKEY_FUEL_API_URL im Workflow" }
+  ]
+}
