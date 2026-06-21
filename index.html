@@ -1,355 +1,1107 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <title>Reiseroute Velbert – Izmir (Hin- und Rückweg)</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#b91c1c">
+  <meta name="description" content="Private Reise-App für die Fahrt von Velbert nach Izmir und zurück: Route, Checklisten, Kostenrechner, Grenzen und Notizen.">
+  <link rel="manifest" href="manifest.json">
+  <title>Türkiye Yolculuk – Velbert nach Izmir</title>
   <style>
+    :root {
+      --bg: #f6f3ee;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --line: #e5e7eb;
+      --red: #b91c1c;
+      --red-dark: #7f1d1d;
+      --green: #047857;
+      --amber: #b45309;
+      --blue: #1d4ed8;
+      --shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
     body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
       line-height: 1.5;
+      padding-bottom: 92px;
     }
-    h1, h2, h3 {
-      margin-top: 1.5em;
+
+    a { color: inherit; }
+
+    .hero {
+      background: linear-gradient(135deg, #991b1b, #dc2626 55%, #f97316);
+      color: white;
+      padding: 22px 16px 26px;
+      border-bottom-left-radius: 26px;
+      border-bottom-right-radius: 26px;
+      box-shadow: var(--shadow);
     }
-    .section {
-      border: 1px solid #ccc;
-      padding: 15px;
-      margin-bottom: 25px;
-      border-radius: 6px;
+
+    .hero-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      max-width: 980px;
+      margin: 0 auto;
     }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-      margin-bottom: 10px;
+
+    .app-title {
+      margin: 0;
+      font-size: clamp(1.55rem, 6vw, 2.6rem);
+      letter-spacing: -0.04em;
     }
-    th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      font-size: 0.82rem;
+      white-space: nowrap;
+    }
+
+    .hero p {
+      max-width: 980px;
+      margin: 10px auto 0;
+      color: rgba(255, 255, 255, 0.92);
+    }
+
+    .quick-grid {
+      max-width: 980px;
+      margin: 16px auto 0;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .quick-card {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 15px;
+      padding: 12px;
+      min-height: 78px;
+    }
+
+    .quick-card strong {
+      display: block;
+      font-size: 1.2rem;
+      line-height: 1.1;
+    }
+
+    .quick-card span {
+      display: block;
+      margin-top: 4px;
+      font-size: 0.84rem;
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    main {
+      width: min(980px, 100%);
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    .notice {
+      margin: 16px 0;
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      color: #7c2d12;
+      border-radius: var(--radius);
+      padding: 13px 14px;
       font-size: 0.95rem;
     }
-    th {
-      background-color: #f2f2f2;
-      text-align: left;
+
+    .nav-tabs {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 10px 0 12px;
+      background: linear-gradient(var(--bg) 75%, rgba(246, 243, 238, 0));
+      -webkit-overflow-scrolling: touch;
     }
-    ul {
-      margin-top: 5px;
-      list-style: none; /* Entfernt die Punkte, weil wir Checkboxen nutzen */
-      padding-left: 0;
+
+    .tab-btn {
+      border: 1px solid var(--line);
+      background: white;
+      color: var(--text);
+      border-radius: 999px;
+      padding: 10px 13px;
+      font-weight: 700;
+      white-space: nowrap;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
     }
-    li {
-      margin-bottom: 4px;
+
+    .tab-btn.active {
+      background: var(--red);
+      color: white;
+      border-color: var(--red);
     }
+
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    .section-title {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 14px 0 10px;
+    }
+
+    .section-title h2 {
+      margin: 0;
+      font-size: 1.35rem;
+      letter-spacing: -0.02em;
+    }
+
+    .section-title small { color: var(--muted); }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 15px;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .card h3 {
+      margin: 0 0 8px;
+      font-size: 1.05rem;
+    }
+
+    .card p { margin: 7px 0; }
+
+    .muted { color: var(--muted); }
+    .danger { color: var(--red-dark); font-weight: 700; }
+    .ok { color: var(--green); font-weight: 700; }
+    .warn { color: var(--amber); font-weight: 700; }
+
+    .route-card {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .step-no {
+      width: 42px;
+      height: 42px;
+      border-radius: 13px;
+      background: #fee2e2;
+      color: var(--red-dark);
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+    }
+
+    .link-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .btn, .small-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      border: 0;
+      border-radius: 12px;
+      background: var(--red);
+      color: white;
+      padding: 10px 12px;
+      font-weight: 800;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .small-btn {
+      font-size: 0.85rem;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: #111827;
+    }
+
+    .btn.secondary, .small-btn.secondary {
+      background: #f3f4f6;
+      color: #111827;
+      border: 1px solid var(--line);
+    }
+
+    .btn.green { background: var(--green); }
+    .btn.blue { background: var(--blue); }
+    .btn.amber { background: var(--amber); }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    label.input-label {
+      display: block;
+      font-weight: 750;
+      font-size: 0.88rem;
+      margin-bottom: 6px;
+    }
+
+    input[type="number"], input[type="text"], select, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      border-radius: 12px;
+      padding: 11px 12px;
+      font: inherit;
+    }
+
+    textarea {
+      min-height: 116px;
+      resize: vertical;
+    }
+
+    .calc-result {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .result-box {
+      background: #f9fafb;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px;
+    }
+
+    .result-box span {
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .result-box strong {
+      display: block;
+      margin-top: 3px;
+      font-size: 1.35rem;
+    }
+
+    .check-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .progress-wrap {
+      height: 12px;
+      background: #f3f4f6;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 12px 0;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, var(--green), #22c55e);
+      transition: width .25s ease;
+    }
+
+    .check-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .check-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: #fff;
+    }
+
+    .check-item input {
+      width: 22px;
+      height: 22px;
+      flex: 0 0 auto;
+      accent-color: var(--green);
+    }
+
+    .check-item.done span {
+      color: var(--muted);
+      text-decoration: line-through;
+    }
+
+    .pill-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .pill {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #f9fafb;
+      padding: 7px 10px;
+      font-size: 0.88rem;
+    }
+
+    .bottom-actions {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 20;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid var(--line);
+      padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
+    }
+
+    .bottom-inner {
+      width: min(980px, 100%);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
     footer {
-      margin-top: 40px;
-      padding-top: 10px;
-      border-top: 1px solid #ccc;
       text-align: center;
+      color: var(--muted);
+      padding: 26px 14px;
       font-size: 0.9rem;
-      color: #555;
     }
-    .check-item input[type="checkbox"] {
-      margin-right: 8px;
+
+    @media (max-width: 720px) {
+      .grid-2, .grid-3, .calc-result { grid-template-columns: 1fr; }
+      .quick-grid { grid-template-columns: 1fr 1fr; }
+      .hero { padding-top: 18px; }
+      main { padding: 12px; }
+      .card { padding: 13px; }
+    }
+
+    @media print {
+      body { background: white; padding-bottom: 0; }
+      .nav-tabs, .bottom-actions, .btn, .small-btn { display: none !important; }
+      .panel { display: block !important; page-break-inside: avoid; }
+      .card { box-shadow: none; }
+      .hero { color: black; background: white; border-radius: 0; box-shadow: none; }
     }
   </style>
 </head>
 <body>
+  <header class="hero">
+    <div class="hero-top">
+      <div>
+        <h1 class="app-title">Türkiye Yolculuk</h1>
+        <div class="badge">🇩🇪 Velbert → 🇹🇷 Izmir → Velbert</div>
+      </div>
+      <button class="small-btn secondary" id="installBtn" hidden>📲 App</button>
+    </div>
+    <p>Private Reise-App für Route, Checklisten, Kosten, Grenzen, Tanken/Laden und Notizen. Alles bleibt lokal auf deinem iPhone gespeichert.</p>
+    <div class="quick-grid">
+      <div class="quick-card"><strong id="quickDone">0%</strong><span>Checkliste erledigt</span></div>
+      <div class="quick-card"><strong id="quickCost">0 €</strong><span>geschätzte Gesamtkosten</span></div>
+      <div class="quick-card"><strong>2.800 km</strong><span>Standard je Richtung, änderbar</span></div>
+      <div class="quick-card"><strong>Juni 2026</strong><span>Planungsstand, bitte prüfen</span></div>
+    </div>
+  </header>
 
-  <h1>Reiseroute: Velbert → Izmir (462. Sk.) → Velbert</h1>
-  <p>
-    Start: <strong>Velbert (Deutschland)</strong><br>
-    Ziel: <strong>Izmir, 462. Sk., Türkei</strong>
-  </p>
+  <main>
+    <div class="notice">
+      <strong>Wichtig:</strong> Die Seite ist eine private Planungshilfe. Maut, Vignetten, Grenzregeln, Versicherung und Einreise können sich ändern. Vor der Fahrt immer offizielle Seiten prüfen.
+    </div>
 
-  <!-- ================= OBERE HÄLFTE: HINWEG ================= -->
-  <div class="section">
-    <h2>Hinweg: Velbert → Türkei (über Österreich, Ungarn, Rumänien, Bulgarien)</h2>
+    <nav class="nav-tabs" aria-label="Bereiche">
+      <button class="tab-btn active" data-tab="start">🏠 Start</button>
+      <button class="tab-btn" data-tab="route">🛣️ Route</button>
+      <button class="tab-btn" data-tab="kosten">💶 Kosten</button>
+      <button class="tab-btn" data-tab="checkliste">✅ Checkliste</button>
+      <button class="tab-btn" data-tab="grenzen">🛂 Grenzen</button>
+      <button class="tab-btn" data-tab="tanken">⛽ Tanken/Laden</button>
+      <button class="tab-btn" data-tab="notizen">📝 Notizen</button>
+    </nav>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Etappe</th>
-          <th>Von → Nach</th>
-          <th>Google Maps Link</th>
-          <th>Vignette / Maut (grob)</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>1</td>
-          <td>Velbert → Passau (AT-Grenze)</td>
-          <td>
-            <a href="https://www.google.com/maps/dir/Velbert/Passau/" target="_blank">
-              Route DE → AT
-            </a>
-          </td>
-          <td>
-            Deutschland: keine PKW-Maut<br>
-            Österreich (für Weiterfahrt): 10-Tages-Vignette ca. 10–12 €
-          </td>
-        </tr>
+    <section class="panel active" id="start">
+      <div class="section-title">
+        <h2>Übersicht</h2>
+        <small>für die schnelle Kontrolle</small>
+      </div>
 
-        <tr>
-          <td>2</td>
-          <td>Passau → Nickelsdorf / Hegyeshalom (Ungarn)</td>
-          <td>
-            <a href="https://www.google.com/maps/dir/Passau/Nickelsdorf+Austria/" target="_blank">
-              Route AT → HU (Nickelsdorf)
-            </a>
-          </td>
-          <td>
-            Österreich: durch Vignette abgedeckt<br>
-            Ungarn: E-Vignette (D1 PKW, 10 Tage) ca. 12–15 €
-          </td>
-        </tr>
+      <div class="grid-2">
+        <div class="card">
+          <h3>🚗 Hauptstrecke</h3>
+          <p><strong>Velbert → Passau → Ungarn → Rumänien → Bulgarien → Kapıkule → Izmir</strong></p>
+          <p class="muted">Diese Route vermeidet Serbien. Sie ist länger, aber für manche entspannter wegen EU-Transit bis Bulgarien.</p>
+          <div class="link-row">
+            <a class="btn" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/Velbert/Passau/N%C4%83dlac/Calafat/Vidin/Kap%C4%B1kule/462.+Sk,+%C4%B0zmir/">Route öffnen</a>
+          </div>
+        </div>
 
-        <tr>
-          <td>3</td>
-          <td>Ungarn → Rumänien (Nagylak – Nădlac)</td>
-          <td>
-            <a href="https://www.google.com/maps/dir/Nickelsdorf/N%C4%83dlac/" target="_blank">
-              Route HU → RO (Nagylak–Nădlac)
-            </a>
-          </td>
-          <td>
-            Ungarn: Autobahnen durch E-Vignette abgedeckt<br>
-            Rumänien: Rovinieta (z. B. 7 Tage) ca. 5–7 €
-          </td>
-        </tr>
+        <div class="card">
+          <h3>📌 Vor Abfahrt</h3>
+          <p>Erst Dokumente, Auto und Pflichtausrüstung abhaken. Danach Kostenrechner prüfen und Grenz-Alternativen speichern.</p>
+          <div class="progress-wrap"><div class="progress-bar" id="startProgress"></div></div>
+          <p><strong id="startProgressText">0 von 0 erledigt</strong></p>
+        </div>
+      </div>
 
-        <tr>
-          <td>4</td>
-          <td>Rumänien → Bulgarien (Calafat – Vidin, Donau-Brücke)</td>
-          <td>
-            <a href="https://www.google.com/maps/dir/N%C4%83dlac/Calafat/Vidin/" target="_blank">
-              Route RO → BG (Calafat–Vidin)
-            </a>
-          </td>
-          <td>
-            Rumänien: Rovinieta nötig<br>
-            Brücke Calafat–Vidin: ca. 6 € PKW<br>
-            Bulgarien: E-Vignette (7 Tage) ca. 7–9 €
-          </td>
-        </tr>
+      <div class="card">
+        <h3>⚠️ Dinge, die du nicht vergessen solltest</h3>
+        <div class="pill-list">
+          <span class="pill">Grüne Versicherungskarte Türkei prüfen</span>
+          <span class="pill">HGS / türkische Maut prüfen</span>
+          <span class="pill">Offline-Karten laden</span>
+          <span class="pill">Warnwesten für alle</span>
+          <span class="pill">Dokumente digital + Papier</span>
+          <span class="pill">Alternative Grenze speichern</span>
+        </div>
+      </div>
+    </section>
 
-        <tr>
-          <td>5</td>
-          <td>Bulgarien → Türkei (Kapitan Andreevo – Kapıkule)</td>
-          <td>
-            <a href="https://www.google.com/maps/dir/Vidin/Kap%C4%B1kule/" target="_blank">
-              Route BG → TR (Kapitan Andreevo – Kapıkule)
-            </a>
-          </td>
-          <td>
-            Bulgarien: durch E-Vignette abgedeckt<br>
-            Türkei: Autobahn-/Brückenmaut (HGS/OGS), je nach Strecke ca. 25–40 €
-          </td>
-        </tr>
+    <section class="panel" id="route">
+      <div class="section-title">
+        <h2>Route & Etappen</h2>
+        <small>Hinweg und Rückweg</small>
+      </div>
 
-        <tr>
-          <td>6</td>
-          <td>Kapıkule → Izmir (462. Sk.)</td>
-          <td>
-            <a href="https://www.google.com/maps/dir/Kap%C4%B1kule/462.+Sk,+İzmir/" target="_blank">
-              Route TR-Grenze → Izmir
-            </a>
-          </td>
-          <td>
-            Türkei: Otoyol (Autobahnen) mautpflichtig, Brücken/Tunnel ggf. extra
-          </td>
-        </tr>
-      </tbody>
-    </table>
+      <div class="card">
+        <h3>Route A – über Österreich, Ungarn, Rumänien, Bulgarien</h3>
+        <p class="muted">Als Standardroute eingetragen. Die Links öffnen jeweils Google Maps.</p>
+      </div>
 
-    <h3>Gesamtkosten Hinweg (grobe Schätzung, ohne Diesel):</h3>
-    <ul>
-      <li>Österreich Vignette: ~ 10–12 €</li>
-      <li>Ungarn E-Vignette: ~ 12–15 €</li>
-      <li>Rumänien Rovinieta: ~ 5–7 €</li>
-      <li>Bulgarien E-Vignette + Brücke: ~ 13–15 €</li>
-      <li>Türkei Autobahn-/Brückenmaut: ~ 25–40 €</li>
-    </ul>
-    <p><strong>Summe Hinweg:</strong> ca. 65–90 € (nur Straßenkosten).</p>
-  </div>
+      <div id="routeList"></div>
 
-  <!-- ================= UNTERE HÄLFTE: RÜCKWEG ================= -->
-  <div class="section">
-    <h2>Rückweg: Izmir (462. Sk.) → Velbert</h2>
+      <div class="card">
+        <h3>Route B – Alternative über Serbien</h3>
+        <p>Velbert → Österreich → Ungarn → Serbien → Bulgarien → Türkei → Izmir</p>
+        <p class="muted">Kann je nach Verkehr schneller sein. Dafür vorher Einreise, Versicherung/Grüne Karte, Maut und Grenzzeiten Serbien prüfen.</p>
+        <div class="link-row">
+          <a class="btn secondary" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/Velbert/Passau/Budapest/Belgrade/Sofia/Kap%C4%B1kule/462.+Sk,+%C4%B0zmir/">Alternative öffnen</a>
+        </div>
+      </div>
+    </section>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Etappe</th>
-          <th>Von → Nach</th>
-          <th>Google Maps Link</th>
-          <th>Vignette / Maut (grob)</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>1</td>
-          <td>Izmir (462. Sk.) → Kapıkule</td>
-          <td>
-            <a href="https://www.google.com/maps/dir/462.+Sk,+İzmir/Kap%C4%B1kule/" target="_blank">
-              Route Izmir → TR-Grenze
-            </a>
-          </td>
-          <td>
-            Türkei: wieder Autobahn-/Brückenmaut ~ 25–40 €
-          </td>
-        </tr>
+    <section class="panel" id="kosten">
+      <div class="section-title">
+        <h2>Kostenrechner</h2>
+        <small>Werte sind änderbar</small>
+      </div>
 
-        <tr>
-          <td>2</td>
-          <td>Türkei → Bulgarien (Kapıkule – Kapitan Andreevo → Vidin)</td>
-          <td>
-            <a href="https://www.google.com/maps/dir/Kap%C4%B1kule/Vidin/" target="_blank">
-              Route TR → BG
-            </a>
-          </td>
-          <td>
-            Bulgarien: erneut E-Vignette (7 Tage) ~ 7–9 €
-          </td>
-        </tr>
+      <div class="card">
+        <h3>Fahrzeug & Strecke</h3>
+        <div class="grid-3">
+          <div>
+            <label class="input-label" for="vehicleType">Modus</label>
+            <select id="vehicleType">
+              <option value="diesel">Diesel / Benzin</option>
+              <option value="electric">E-Auto</option>
+            </select>
+          </div>
+          <div>
+            <label class="input-label" for="distanceOneWay">km je Richtung</label>
+            <input id="distanceOneWay" type="number" min="0" step="10" value="2800">
+          </div>
+          <div>
+            <label class="input-label" for="tripMode">Reise</label>
+            <select id="tripMode">
+              <option value="2">Hin & zurück</option>
+              <option value="1">Nur eine Richtung</option>
+            </select>
+          </div>
+        </div>
+      </div>
 
-        <tr>
-          <td>3</td>
-          <td>Bulgarien → Rumänien (Vidin – Calafat – Nădlac)</td>
-          <td>
-            <a href="https://www.google.com/maps/dir/Vidin/Calafat/N%C4%83dlac/" target="_blank">
-              Route BG → RO → HU-Grenze
-            </a>
-          </td>
-          <td>
-            Brücke Calafat–Vidin: ca. 6 €<br>
-            Rumänien: neue/verlängerte Rovinieta nötig
-          </td>
-        </tr>
+      <div class="card" id="fuelCard">
+        <h3>Verbrauch</h3>
+        <div class="grid-3">
+          <div>
+            <label class="input-label" for="consumption">Verbrauch je 100 km</label>
+            <input id="consumption" type="number" min="0" step="0.1" value="6.5">
+          </div>
+          <div>
+            <label class="input-label" for="unitPrice">Preis pro Liter / kWh</label>
+            <input id="unitPrice" type="number" min="0" step="0.01" value="1.70">
+          </div>
+          <div>
+            <label class="input-label" for="extraBuffer">Puffer / Essen / Parken</label>
+            <input id="extraBuffer" type="number" min="0" step="5" value="100">
+          </div>
+        </div>
+      </div>
 
-        <tr>
-          <td>4</td>
-          <td>Rumänien → Ungarn (Nădlac – Hegyeshalom)</td>
-          <td>
-            <a href="https://www.google.com/maps/dir/N%C4%83dlac/Hegyeshalom/" target="_blank">
-              Route RO → HU
-            </a>
-          </td>
-          <td>
-            Ungarn: neue E-Vignette (D1, 10 Tage) ~ 12–15 €
-          </td>
-        </tr>
+      <div class="card">
+        <h3>Maut & Vignetten pro Richtung</h3>
+        <div class="grid-3">
+          <div>
+            <label class="input-label" for="tollAt">Österreich</label>
+            <input id="tollAt" type="number" min="0" step="0.1" value="12.8">
+          </div>
+          <div>
+            <label class="input-label" for="tollHu">Ungarn</label>
+            <input id="tollHu" type="number" min="0" step="0.1" value="17">
+          </div>
+          <div>
+            <label class="input-label" for="tollRo">Rumänien</label>
+            <input id="tollRo" type="number" min="0" step="0.1" value="7">
+          </div>
+          <div>
+            <label class="input-label" for="tollBg">Bulgarien</label>
+            <input id="tollBg" type="number" min="0" step="0.1" value="8">
+          </div>
+          <div>
+            <label class="input-label" for="bridgeFee">Calafat–Vidin Brücke</label>
+            <input id="bridgeFee" type="number" min="0" step="0.1" value="6">
+          </div>
+          <div>
+            <label class="input-label" for="tollTr">Türkei HGS / Brücken</label>
+            <input id="tollTr" type="number" min="0" step="1" value="40">
+          </div>
+        </div>
+        <p class="muted">Alle Beträge in Euro. Werte bewusst änderbar, weil Kurse und Preise wechseln.</p>
+      </div>
 
-        <tr>
-          <td>5</td>
-          <td>Ungarn → Österreich (Hegyeshalom – Passau)</td>
-          <td>
-            <a href="https://www.google.com/maps/dir/Hegyeshalom/Passau/" target="_blank">
-              Route HU → AT → DE-Grenze
-            </a>
-          </td>
-          <td>
-            Österreich: ggf. erneut 10-Tages-Vignette ~ 10–12 €
-          </td>
-        </tr>
+      <div class="card">
+        <h3>Ergebnis</h3>
+        <div class="calc-result">
+          <div class="result-box"><span>Energie / Kraftstoff</span><strong id="energyCost">0 €</strong></div>
+          <div class="result-box"><span>Maut & Vignetten</span><strong id="tollCost">0 €</strong></div>
+          <div class="result-box"><span>Gesamt</span><strong id="totalCost">0 €</strong></div>
+        </div>
+        <div class="link-row">
+          <button class="btn secondary" id="resetCalc">Standardwerte</button>
+        </div>
+      </div>
+    </section>
 
-        <tr>
-          <td>6</td>
-          <td>Österreich → Velbert</td>
-          <td>
-            <a href="https://www.google.com/maps/dir/Passau/Velbert/" target="_blank">
-              Route AT → Velbert
-            </a>
-          </td>
-          <td>
-            Deutschland: keine PKW-Maut
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <section class="panel" id="checkliste">
+      <div class="section-title">
+        <h2>Checkliste</h2>
+        <small>wird gespeichert</small>
+      </div>
 
-    <h3>Gesamtkosten Rückweg (grobe Schätzung, ohne Diesel):</h3>
-    <ul>
-      <li>Österreich Vignette: ~ 10–12 €</li>
-      <li>Ungarn E-Vignette: ~ 12–15 €</li>
-      <li>Rumänien Rovinieta: ~ 5–7 €</li>
-      <li>Bulgarien E-Vignette + Brücke: ~ 13–15 €</li>
-      <li>Türkei Autobahn-/Brückenmaut: ~ 25–40 €</li>
-    </ul>
-    <p><strong>Summe Rückweg:</strong> ca. 65–90 € (nur Straßenkosten).</p>
+      <div class="card">
+        <div class="check-head">
+          <div>
+            <h3>Fortschritt</h3>
+            <p class="muted" id="progressText">0 von 0 erledigt</p>
+          </div>
+          <button class="small-btn secondary" id="resetChecks">Zurücksetzen</button>
+        </div>
+        <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+      </div>
 
-    <h3>Gesamtkosten Hin &amp; Zurück (nur Straßenkosten):</h3>
-    <p><strong>ca. 130–180 €</strong> (ohne Diesel, je nach Kurs und Strecke).</p>
-  </div>
+      <div id="checklistRoot"></div>
+    </section>
 
-  <!-- ================= ZUSATZ-INFOS / CHECKLISTEN ================= -->
-  <div class="section">
-    <h2>Wichtige Dinge im Auto (Checkliste – normaler PKW ohne Anhänger)</h2>
+    <section class="panel" id="grenzen">
+      <div class="section-title">
+        <h2>Grenzen & Sicherheit</h2>
+        <small>schnell griffbereit</small>
+      </div>
 
-    <h3>Pflicht in vielen Transitländern:</h3>
-    <ul>
-      <li class="check-item"><input type="checkbox">Warnweste (mindestens 1, besser 1 pro Sitzplatz)</li>
-      <li class="check-item"><input type="checkbox">Warndreieck</li>
-      <li class="check-item"><input type="checkbox">Verbandskasten (DIN 13164)</li>
-      <li class="check-item"><input type="checkbox">Ersatzlampen-Set</li>
-      <li class="check-item"><input type="checkbox">Feuerlöscher</li>
-      <li class="check-item"><input type="checkbox">Ersatzreifen oder Notrad</li>
-      <li class="check-item"><input type="checkbox">Wagenheber und Radkreuz</li>
-      <li class="check-item"><input type="checkbox">Abschleppseil</li>
-    </ul>
+      <div class="grid-2">
+        <div class="card">
+          <h3>🇧🇬 → 🇹🇷 Kapıkule</h3>
+          <p>Hauptgrenze Richtung Türkei. Mit Wartezeit rechnen, besonders Ferien, Wochenende und nachts.</p>
+          <div class="link-row">
+            <a class="btn" target="_blank" rel="noopener" href="https://www.google.com/maps/search/Kap%C4%B1kule+Border+Gate/">Maps</a>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Alternative: Hamzabeyli</h3>
+          <p>Als Ausweichgrenze speichern, falls Kapıkule sehr voll ist.</p>
+          <div class="link-row">
+            <a class="btn secondary" target="_blank" rel="noopener" href="https://www.google.com/maps/search/Hamzabeyli+Border+Gate/">Maps</a>
+          </div>
+        </div>
+        <div class="card">
+          <h3>🇷🇴 ↔ 🇧🇬 Calafat–Vidin</h3>
+          <p>Brücke zwischen Rumänien und Bulgarien. Brückenmaut einplanen.</p>
+          <div class="link-row">
+            <a class="btn secondary" target="_blank" rel="noopener" href="https://www.google.com/maps/search/Calafat+Vidin+Bridge/">Maps</a>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Notfall</h3>
+          <p><strong>112</strong> funktioniert in der EU und in der Türkei als Notrufnummer.</p>
+          <p class="muted">Unfallbericht, Versicherung, Ausweise und Standort immer griffbereit halten.</p>
+        </div>
+      </div>
 
-    <h3>Sehr sinnvoll / empfohlen:</h3>
-    <ul>
-      <li class="check-item"><input type="checkbox">Powerbank &amp; Handyhalter</li>
-      <li class="check-item"><input type="checkbox">USB-Ladekabel fürs Handy</li>
-      <li class="check-item"><input type="checkbox">Offline-Karten (Google Maps Karten herunterladen)</li>
-      <li class="check-item"><input type="checkbox">Bar-Geld in EUR, RON, BGN und TL</li>
-      <li class="check-item"><input type="checkbox">Snacks &amp; Getränke</li>
-      <li class="check-item"><input type="checkbox">Decken, Kissen, ggf. Nackenkissen</li>
-      <li class="check-item"><input type="checkbox">Kühlbox</li>
-      <li class="check-item"><input type="checkbox">Europäischer Unfallbericht</li>
-    </ul>
+      <div class="card">
+        <h3>Kontrollpunkte vor jeder Grenze</h3>
+        <div class="pill-list">
+          <span class="pill">Pässe griffbereit</span>
+          <span class="pill">Fahrzeugschein</span>
+          <span class="pill">Grüne Karte</span>
+          <span class="pill">Keine offenen Lebensmittel-Risiken</span>
+          <span class="pill">Tank mindestens halb voll</span>
+          <span class="pill">Kinder vorher Toilette</span>
+        </div>
+      </div>
+    </section>
 
-    <h3>Dokumente &amp; Versicherungen:</h3>
-    <ul>
-      <li class="check-item"><input type="checkbox">Reisepass</li>
-      <li class="check-item"><input type="checkbox">Führerschein</li>
-      <li class="check-item"><input type="checkbox">Zulassungsbescheinigung Teil 1 (Fahrzeugschein)</li>
-      <li class="check-item"><input type="checkbox">Grüne Versicherungskarte</li>
-      <li class="check-item"><input type="checkbox">Auslandskrankenversicherung / Schutzbrief</li>
-      <li class="check-item"><input type="checkbox">Vollmacht des Halters (falls Auto nicht auf dich läuft)</li>
-      <li class="check-item"><input type="checkbox">Kopien aller Dokumente (Papier)</li>
-      <li class="check-item"><input type="checkbox">Digitale Kopien auf dem Handy</li>
-    </ul>
+    <section class="panel" id="tanken">
+      <div class="section-title">
+        <h2>Tanken & Laden</h2>
+        <small>Diesel oder E-Auto</small>
+      </div>
 
-    <h3>Tank-Tipps (Diesel):</h3>
-    <ul>
-      <li class="check-item"><input type="checkbox">Vor Türkei (z. B. Bulgarien) volltanken</li>
-      <li class="check-item"><input type="checkbox">Tankstellen auf der Route prüfen (nachts)</li>
-    </ul>
+      <div class="grid-2">
+        <div class="card">
+          <h3>⛽ Diesel / Benzin</h3>
+          <p>Vor langen Grenzabschnitten nicht auf Reserve fahren. Besser bei ca. halbem Tank schon planen.</p>
+          <ul>
+            <li>Vor der Türkei in Bulgarien volltanken, falls es preislich passt.</li>
+            <li>Nachts größere Raststätten bevorzugen.</li>
+            <li>Barzahlung und Karte möglich halten.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>⚡ E-Auto</h3>
+          <p>Vor der Fahrt Apps/Ladekarten testen und nie mit sehr niedrigem Akku zur Grenze fahren.</p>
+          <ul>
+            <li>Deutschland/Österreich/Ungarn vorher Ladepunkte speichern.</li>
+            <li>Rumänien/Bulgarien mit mehr Reserve planen.</li>
+            <li>Türkei-Ladeapps vor Reise prüfen.</li>
+          </ul>
+        </div>
+      </div>
 
-    <h3>Grenz- und Sicherheitsinfos:</h3>
-    <ul>
-      <li class="check-item"><input type="checkbox">Kapıkule: mit Wartezeit rechnen</li>
-      <li class="check-item"><input type="checkbox">Alternative Hamzabeyli im Navi speichern</li>
-      <li class="check-item"><input type="checkbox">Wertsachen unsichtbar im Auto verstauen</li>
-      <li class="check-item"><input type="checkbox">Pausen so planen, dass du nicht übermüdet fährst</li>
-    </ul>
+      <div class="card">
+        <h3>Eigene Tank-/Lade-Notizen</h3>
+        <textarea id="fuelNotes" placeholder="Hier gute Tankstellen, Ladepunkte oder Rastplätze notieren..."></textarea>
+      </div>
+    </section>
 
-    <h3>Technische Vorbereitung fürs Auto:</h3>
-    <ul>
-      <li class="check-item"><input type="checkbox">Ölstand prüfen</li>
-      <li class="check-item"><input type="checkbox">Kühlflüssigkeit prüfen</li>
-      <li class="check-item"><input type="checkbox">Bremsflüssigkeit prüfen</li>
-      <li class="check-item"><input type="checkbox">Reifendruck &amp; Profil prüfen (inkl. Ersatzrad)</li>
-      <li class="check-item"><input type="checkbox">Lichttest (Abblend-/Fernlicht, Blinker, Bremslicht)</li>
-      <li class="check-item"><input type="checkbox">Scheibenwischer &amp; Wischwasser prüfen</li>
-    </ul>
+    <section class="panel" id="notizen">
+      <div class="section-title">
+        <h2>Notizen</h2>
+        <small>lokal gespeichert</small>
+      </div>
+
+      <div class="card">
+        <h3>Reise-Notizen</h3>
+        <textarea id="tripNotes" placeholder="z. B. Abfahrtszeit, Hotel, Grenzerfahrung, wichtige Telefonnummern..."></textarea>
+      </div>
+
+      <div class="card">
+        <h3>Adressen</h3>
+        <div class="grid-2">
+          <div>
+            <label class="input-label" for="homeAddress">Startadresse</label>
+            <input id="homeAddress" type="text" value="Velbert, Deutschland">
+          </div>
+          <div>
+            <label class="input-label" for="targetAddress">Zieladresse</label>
+            <input id="targetAddress" type="text" value="462. Sk., İzmir, Türkei">
+          </div>
+        </div>
+        <div class="link-row">
+          <button class="btn blue" id="openCustomRoute">Eigene Route öffnen</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="bottom-actions">
+    <div class="bottom-inner">
+      <button class="btn green" id="saveNow">Speichern</button>
+      <button class="btn secondary" id="printPage">Drucken / PDF</button>
+    </div>
   </div>
 
   <footer>
-    Programmiert von <strong>F. Kaplan</strong>
+    Programmiert von <strong>F. Kaplan</strong> · Türkiye Yolculuk · lokale private Reisehilfe
   </footer>
 
+  <script>
+    const STORAGE_KEY = "turkiye-yolculuk-v3";
+
+    const routeSteps = [
+      {
+        title: "Velbert → Passau",
+        text: "Deutschland bis österreichische Grenze. Vor Österreich Vignette bereithalten.",
+        toll: "Deutschland keine Pkw-Maut · Österreich Vignette nötig",
+        link: "https://www.google.com/maps/dir/Velbert/Passau/"
+      },
+      {
+        title: "Passau → Nickelsdorf / Hegyeshalom",
+        text: "Österreich Richtung Ungarn. Auf Vignette und Tankpause achten.",
+        toll: "Österreich Vignette · Ungarn E-Vignette vor Autobahn kaufen",
+        link: "https://www.google.com/maps/dir/Passau/Nickelsdorf+Austria/"
+      },
+      {
+        title: "Ungarn → Rumänien: Nădlac",
+        text: "Grenzübergang Ungarn/Rumänien. Rumänische Rovinieta rechtzeitig kaufen.",
+        toll: "Ungarn E-Vignette · Rumänien Rovinieta",
+        link: "https://www.google.com/maps/dir/Nickelsdorf/N%C4%83dlac/"
+      },
+      {
+        title: "Rumänien → Calafat → Vidin",
+        text: "Durch Rumänien zur Donau-Brücke Calafat–Vidin.",
+        toll: "Rumänien Rovinieta · Brückenmaut Calafat–Vidin",
+        link: "https://www.google.com/maps/dir/N%C4%83dlac/Calafat/Vidin/"
+      },
+      {
+        title: "Vidin → Kapıkule",
+        text: "Bulgarien Richtung Türkei. Bulgarische E-Vignette einplanen.",
+        toll: "Bulgarien E-Vignette · Grenze Kapitan Andreevo/Kapıkule",
+        link: "https://www.google.com/maps/dir/Vidin/Kap%C4%B1kule/"
+      },
+      {
+        title: "Kapıkule → Izmir",
+        text: "Türkei-Strecke bis Izmir. HGS/Autobahnmaut und Pausen einplanen.",
+        toll: "Türkei HGS / Otoyol / Brücken je nach Strecke",
+        link: "https://www.google.com/maps/dir/Kap%C4%B1kule/462.+Sk,+%C4%B0zmir/"
+      }
+    ];
+
+    const checklistGroups = [
+      {
+        key: "docs",
+        title: "📄 Dokumente",
+        items: [
+          "Reisepässe / Ausweise für alle Personen",
+          "Führerschein",
+          "Zulassungsbescheinigung Teil 1 / Fahrzeugschein",
+          "Grüne Versicherungskarte inklusive Türkei-Abdeckung prüfen",
+          "Auslandskrankenversicherung / Schutzbrief",
+          "Vollmacht des Halters, falls Auto nicht auf dich läuft",
+          "Papierkopien aller wichtigen Dokumente",
+          "Digitale Kopien auf dem Handy speichern"
+        ]
+      },
+      {
+        key: "car",
+        title: "🚗 Auto & Pflichtausrüstung",
+        items: [
+          "Warnwesten, am besten eine pro Sitzplatz",
+          "Warndreieck",
+          "Verbandskasten DIN 13164 prüfen",
+          "Feuerlöscher prüfen",
+          "Ersatzreifen/Notrad oder Pannenset prüfen",
+          "Wagenheber und Radkreuz",
+          "Lichttest: Abblendlicht, Fernlicht, Blinker, Bremslicht",
+          "Reifendruck und Profil prüfen",
+          "Ölstand und Kühlwasser prüfen",
+          "Scheibenwischer und Wischwasser auffüllen",
+          "Powerbank und Ladekabel"
+        ]
+      },
+      {
+        key: "route",
+        title: "🛣️ Route & Maut",
+        items: [
+          "Österreich Vignette prüfen/kaufen",
+          "Ungarn E-Vignette prüfen/kaufen",
+          "Rumänien Rovinieta prüfen/kaufen",
+          "Bulgarien E-Vignette prüfen/kaufen",
+          "Türkei HGS / Maut prüfen",
+          "Calafat–Vidin Brücke einplanen",
+          "Offline-Karten für alle Länder herunterladen",
+          "Kapıkule und Hamzabeyli im Navi speichern"
+        ]
+      },
+      {
+        key: "family",
+        title: "👨‍👩‍👧‍👦 Familie & Kinder",
+        items: [
+          "Snacks und Getränke",
+          "Decken und Nackenkissen",
+          "Kinder-Kopfhörer / Tablet / Unterhaltung",
+          "Medikamente und Fiebermittel",
+          "Feuchttücher / Müllbeutel",
+          "Wechselkleidung griffbereit",
+          "Kühlbox vorbereiten",
+          "Toilettenpausen vor Grenzen planen"
+        ]
+      },
+      {
+        key: "security",
+        title: "🛡️ Sicherheit",
+        items: [
+          "Wertsachen unsichtbar verstauen",
+          "Nicht auf dunklen einsamen Parkplätzen schlafen",
+          "Europäischen Unfallbericht mitnehmen",
+          "Notrufnummer 112 merken",
+          "Bargeld in Euro und etwas Landeswährung bereithalten",
+          "Kartenlimit und Roaming prüfen"
+        ]
+      }
+    ];
+
+    const calcDefaults = {
+      vehicleType: "diesel",
+      distanceOneWay: 2800,
+      tripMode: 2,
+      consumption: 6.5,
+      unitPrice: 1.70,
+      extraBuffer: 100,
+      tollAt: 12.8,
+      tollHu: 17,
+      tollRo: 7,
+      tollBg: 8,
+      bridgeFee: 6,
+      tollTr: 40
+    };
+
+    const state = loadState();
+
+    function loadState() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+        return {
+          checks: saved.checks || {},
+          calc: { ...calcDefaults, ...(saved.calc || {}) },
+          notes: saved.notes || { tripNotes: "", fuelNotes: "", homeAddress: "Velbert, Deutschland", targetAddress: "462. Sk., İzmir, Türkei" }
+        };
+      } catch (error) {
+        return { checks: {}, calc: { ...calcDefaults }, notes: { tripNotes: "", fuelNotes: "", homeAddress: "Velbert, Deutschland", targetAddress: "462. Sk., İzmir, Türkei" } };
+      }
+    }
+
+    function saveState(showFlash = false) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      if (showFlash) {
+        const btn = document.getElementById("saveNow");
+        const old = btn.textContent;
+        btn.textContent = "✅ Gespeichert";
+        setTimeout(() => btn.textContent = old, 1200);
+      }
+    }
+
+    function formatEuro(value) {
+      return new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(value || 0);
+    }
+
+    function renderRoutes() {
+      const root = document.getElementById("routeList");
+      root.innerHTML = routeSteps.map((step, index) => `
+        <div class="card route-card">
+          <div class="step-no">${index + 1}</div>
+          <div>
+            <h3>${step.title}</h3>
+            <p>${step.text}</p>
+            <p class="muted">${step.toll}</p>
+            <div class="link-row">
+              <a class="small-btn" target="_blank" rel="noopener" href="${step.link}">Maps öffnen</a>
+              <a class="small-btn secondary" target="_blank" rel="noopener" href="${step.link.replace('/dir/', '/dir/462.+Sk,+%C4%B0zmir/').replace('/462.+Sk,+%C4%B0zmir/462.+Sk,+%C4%B0zmir/', '/462.+Sk,+%C4%B0zmir/')}">Rückrichtung prüfen</a>
+            </div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderChecklists() {
+      const root = document.getElementById("checklistRoot");
+      root.innerHTML = checklistGroups.map(group => `
+        <div class="card">
+          <h3>${group.title}</h3>
+          <div class="check-list">
+            ${group.items.map((item, index) => {
+              const id = `${group.key}-${index}`;
+              const done = !!state.checks[id];
+              return `
+                <label class="check-item ${done ? "done" : ""}" for="${id}">
+                  <input type="checkbox" id="${id}" data-check-id="${id}" ${done ? "checked" : ""}>
+                  <span>${item}</span>
+                </label>
+              `;
+            }).join("")}
+          </div>
+        </div>
+      `).join("");
+
+      document.querySelectorAll("[data-check-id]").forEach(input => {
+        input.addEventListener("change", event => {
+          const id = event.target.dataset.checkId;
+          state.checks[id] = event.target.checked;
+          event.target.closest(".check-item").classList.toggle("done", event.target.checked);
+          saveState();
+          updateProgress();
+        });
+      });
+      updateProgress();
+    }
+
+    function updateProgress() {
+      const total = checklistGroups.reduce((sum, group) => sum + group.items.length, 0);
+      const done = Object.entries(state.checks).filter(([, value]) => value).length;
+      const percent = total ? Math.round((done / total) * 100) : 0;
+
+      document.getElementById("progressText").textContent = `${done} von ${total} erledigt`;
+      document.getElementById("startProgressText").textContent = `${done} von ${total} erledigt`;
+      document.getElementById("progressBar").style.width = `${percent}%`;
+      document.getElementById("startProgress").style.width = `${percent}%`;
+      document.getElementById("quickDone").textContent = `${percent}%`;
+    }
+
+    function bindTabs() {
+      const tabs = document.querySelectorAll(".tab-btn");
+      const panels = document.querySelectorAll(".panel");
+      tabs.forEach(tab => {
+        tab.addEventListener("click", () => {
+          tabs.forEach(t => t.classList.remove("active"));
+          panels.forEach(panel => panel.classList.remove("active"));
+          tab.classList.add("active");
+          document.getElementById(tab.dataset.tab).classList.add("active");
+        });
+      });
+    }
+
+    function bindCalc() {
+      Object.keys(calcDefaults).forEach(key => {
+        const input = document.getElementById(key);
+        if (!input) return;
+        input.value = state.calc[key];
+        input.addEventListener("input", () => {
+          state.calc[key] = input.type === "number" ? Number(input.value) : input.value;
+          saveState();
+          calculateCosts();
+        });
+        input.addEventListener("change", () => {
+          state.calc[key] = input.type === "number" ? Number(input.value) : input.value;
+          saveState();
+          calculateCosts();
+        });
+      });
+
+      document.getElementById("resetCalc").addEventListener("click", () => {
+        state.calc = { ...calcDefaults };
+        Object.keys(calcDefaults).forEach(key => {
+          const input = document.getElementById(key);
+          if (input) input.value = state.calc[key];
+        });
+        saveState();
+        calculateCosts();
+      });
+
+      calculateCosts();
+    }
+
+    function calculateCosts() {
+      const c = state.calc;
+      const directions = Number(c.tripMode) || 1;
+      const km = (Number(c.distanceOneWay) || 0) * directions;
+      const consumption = Number(c.consumption) || 0;
+      const unitPrice = Number(c.unitPrice) || 0;
+      const energyCost = (km / 100) * consumption * unitPrice;
+      const tollOneWay = ["tollAt", "tollHu", "tollRo", "tollBg", "bridgeFee", "tollTr"].reduce((sum, key) => sum + (Number(c[key]) || 0), 0);
+      const tollCost = tollOneWay * directions;
+      const extra = Number(c.extraBuffer) || 0;
+      const total = energyCost + tollCost + extra;
+
+      document.getElementById("energyCost").textContent = formatEuro(energyCost);
+      document.getElementById("tollCost").textContent = formatEuro(tollCost);
+      document.getElementById("totalCost").textContent = formatEuro(total);
+      document.getElementById("quickCost").textContent = formatEuro(total);
+
+      const vehicleType = document.getElementById("vehicleType").value;
+      const consumptionLabel = document.querySelector('label[for="consumption"]');
+      const priceLabel = document.querySelector('label[for="unitPrice"]');
+      if (vehicleType === "electric") {
+        consumptionLabel.textContent = "kWh je 100 km";
+        priceLabel.textContent = "Preis pro kWh";
+      } else {
+        consumptionLabel.textContent = "Liter je 100 km";
+        priceLabel.textContent = "Preis pro Liter";
+      }
+    }
+
+    function bindNotes() {
+      ["tripNotes", "fuelNotes", "homeAddress", "targetAddress"].forEach(id => {
+        const element = document.getElementById(id);
+        if (!element) return;
+        element.value = state.notes[id] || element.value || "";
+        element.addEventListener("input", () => {
+          state.notes[id] = element.value;
+          saveState();
+        });
+      });
+
+      document.getElementById("openCustomRoute").addEventListener("click", () => {
+        const from = encodeURIComponent(document.getElementById("homeAddress").value || "Velbert");
+        const to = encodeURIComponent(document.getElementById("targetAddress").value || "Izmir");
+        window.open(`https://www.google.com/maps/dir/${from}/${to}/`, "_blank", "noopener");
+      });
+    }
+
+    function bindButtons() {
+      document.getElementById("saveNow").addEventListener("click", () => saveState(true));
+      document.getElementById("printPage").addEventListener("click", () => window.print());
+      document.getElementById("resetChecks").addEventListener("click", () => {
+        if (!confirm("Alle Häkchen wirklich zurücksetzen?")) return;
+        state.checks = {};
+        saveState();
+        renderChecklists();
+      });
+    }
+
+    function registerServiceWorker() {
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("sw.js").catch(() => {});
+      }
+    }
+
+    function bindInstallPrompt() {
+      let deferredPrompt = null;
+      const installBtn = document.getElementById("installBtn");
+      window.addEventListener("beforeinstallprompt", event => {
+        event.preventDefault();
+        deferredPrompt = event;
+        installBtn.hidden = false;
+      });
+      installBtn.addEventListener("click", async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        await deferredPrompt.userChoice;
+        deferredPrompt = null;
+        installBtn.hidden = true;
+      });
+    }
+
+    renderRoutes();
+    renderChecklists();
+    bindTabs();
+    bindCalc();
+    bindNotes();
+    bindButtons();
+    bindInstallPrompt();
+    registerServiceWorker();
+  </script>
 </body>
 </html>
