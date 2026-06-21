@@ -31,10 +31,10 @@
       country: "Rumänien",
       flag: "🇷🇴",
       buy: "Rovinieta",
-      category: "Kategorie A · Pkw, auch mit Anhänger",
-      recommendation: "Für die Durchfahrt Kategorie A kaufen. Je nach Reisezeit 10 Tage oder 30 Tage wählen.",
-      extra: "Die Brücke Calafat–Vidin ist extra und nicht mit der Rovinieta abgedeckt.",
-      link: "https://www.roviniete.ro/"
+      category: "Kategorie A / Car · normaler Pkw",
+      recommendation: "Ja, es gibt mehrere Kategorien. Für dein normales Auto musst du im Shop 'Car' bzw. Kategorie A wählen. Nicht '0–3.5 t', das ist dort für Güterfahrzeug/Transporter bis 3,5 t.",
+      extra: "Laufzeiten für Kategorie A: 1 Tag, 10 Tage, 30 Tage, 60 Tage oder 12 Monate. Für reine Durchfahrt reicht meist 10 Tage; wenn Rückfahrt später ist, 30/60 Tage prüfen. Die Brücke Calafat–Vidin ist extra und nicht mit der Rovinieta abgedeckt.",
+      link: "https://www.roviniete.ro/en/rovinieta"
     },
     {
       country: "Bulgarien",
@@ -82,6 +82,7 @@
     card.innerHTML = `
       <h3>🎟️ Was muss ich kaufen?</h3>
       <div class="vignette-warning"><strong>Österreich Screenshot:</strong> Für deine normale Route auf <strong>Digitale Vignetten</strong> tippen. <strong>Digitale Streckenmaut</strong> nur kaufen, wenn dein Navi wirklich über eine Sondermautstrecke fährt.</div>
+      <div class="vignette-warning"><strong>Rumänien:</strong> Für normalen Pkw <strong>Car / Kategorie A</strong> wählen. Die Auswahl <strong>0–3.5 t</strong> ist dort nicht dein normaler Pkw, sondern Güterfahrzeug/Transporter bis 3,5 t.</div>
       <div class="vignette-list">
         ${products.map(item => `
           <div class="vignette-row">
