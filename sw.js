@@ -1,9 +1,10 @@
-const CACHE_NAME = "turkiye-yolculuk-v3";
+const CACHE_NAME = "turkiye-yolculuk-v4";
 const FILES_TO_CACHE = [
   "./",
   "index.html",
   "manifest.json",
-  "fuel-widget.js"
+  "fuel-widget.js",
+  "vignette-widget.js"
 ];
 
 self.addEventListener("install", event => {
@@ -22,16 +23,23 @@ self.addEventListener("activate", event => {
   self.clients.claim();
 });
 
-async function injectFuelWidget(response) {
+async function injectWidgets(response) {
   const text = await response.text();
-  if (text.includes("fuel-widget.js")) {
-    return new Response(text, {
-      status: response.status,
-      statusText: response.statusText,
-      headers: response.headers
-    });
+  let injected = text;
+  const scripts = [];
+
+  if (!injected.includes("fuel-widget.js")) {
+    scripts.push('<script src="fuel-widget.js?v=2"></script>');
   }
-  const injected = text.replace("</body>", "<script src=\"fuel-widget.js?v=1\"></script></body>");
+
+  if (!injected.includes("vignette-widget.js")) {
+    scripts.push('<script src="vignette-widget.js?v=1"></script>');
+  }
+
+  if (scripts.length) {
+    injected = injected.replace("</body>", `${scripts.join("")}</body>`);
+  }
+
   return new Response(injected, {
     status: response.status,
     statusText: response.statusText,
@@ -65,9 +73,9 @@ self.addEventListener("fetch", event => {
         .then(response => {
           const copy = response.clone();
           caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
-          return injectFuelWidget(response);
+          return injectWidgets(response);
         })
-        .catch(() => caches.match("index.html").then(cached => cached ? injectFuelWidget(cached) : caches.match("./")))
+        .catch(() => caches.match("index.html").then(cached => cached ? injectWidgets(cached) : caches.match("./")))
     );
     return;
   }
