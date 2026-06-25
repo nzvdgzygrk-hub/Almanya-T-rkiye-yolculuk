@@ -1,71 +1,55 @@
 {
-  "updated_at": "2026-06-21T15:35:00Z",
-  "data_date": "2026-06-15",
-  "source": "GlobalPetrolPrices.com; EU Weekly Oil Bulletin bleibt als automatischer Workflow zusätzlich vorbereitet.",
-  "source_url": "https://www.globalpetrolprices.com/",
-  "status": "manual_update",
+  "updated_at": "2026-06-25T12:37:41.626795+00:00",
+  "source": "EU: European Commission Weekly Oil Bulletin. Turkey: optional TURKEY_FUEL_API_URL.",
+  "source_url": "https://energy.ec.europa.eu/data-and-analysis/weekly-oil-bulletin_en",
+  "status": "updated",
   "unit": "EUR/L",
-  "note": "Nationale Durchschnittspreise, keine Livepreise einzelner Tankstellen. Stand laut Quelle: 15.06.2026. Autobahntankstellen können teurer sein.",
+  "note": "EU-Werte sind nationale Durchschnittspreise mit Steuern, nicht einzelne Tankstellenpreise.",
   "countries": [
     {
       "code": "DE",
       "country": "Deutschland",
-      "diesel_eur": 1.78,
-      "gasoline95_eur": 1.84,
-      "local_diesel": "EUR 1.78/L",
-      "local_gasoline95": "EUR 1.84/L",
-      "last_update": "2026-06-15",
-      "source": "GlobalPetrolPrices.com"
+      "diesel_eur": 1.729,
+      "gasoline95_eur": 1.87,
+      "source": "European Commission Weekly Oil Bulletin"
     },
     {
       "code": "AT",
       "country": "Österreich",
-      "diesel_eur": 1.82,
-      "gasoline95_eur": 1.73,
-      "local_diesel": "EUR 1.82/L",
-      "local_gasoline95": "EUR 1.73/L",
-      "last_update": "2026-06-15",
-      "source": "GlobalPetrolPrices.com"
+      "diesel_eur": 1.724,
+      "gasoline95_eur": 1.65,
+      "source": "European Commission Weekly Oil Bulletin"
     },
     {
       "code": "HU",
       "country": "Ungarn",
-      "diesel_eur": 1.76,
-      "gasoline95_eur": 1.70,
-      "local_diesel": "HUF 615.00/L",
-      "local_gasoline95": "HUF 595.00/L",
-      "last_update": "2026-06-15",
-      "source": "GlobalPetrolPrices.com / Központi Statisztikai Hivatal"
+      "diesel_eur": 1.68,
+      "gasoline95_eur": 1.636,
+      "source": "European Commission Weekly Oil Bulletin"
     },
     {
       "code": "RO",
       "country": "Rumänien",
-      "diesel_eur": 1.73,
-      "gasoline95_eur": 1.66,
-      "local_diesel": "RON 9.05/L",
-      "local_gasoline95": "RON 8.67/L",
-      "last_update": "2026-06-15",
-      "source": "GlobalPetrolPrices.com / Consiliul Concurenţei"
+      "diesel_eur": 1.729,
+      "gasoline95_eur": 1.634,
+      "source": "European Commission Weekly Oil Bulletin"
     },
     {
       "code": "BG",
       "country": "Bulgarien",
-      "diesel_eur": 1.60,
-      "gasoline95_eur": 1.51,
-      "local_diesel": "EUR 1.60/L",
-      "local_gasoline95": "EUR 1.51/L",
-      "last_update": "2026-06-15",
-      "source": "GlobalPetrolPrices.com / EU Oil Bulletin"
+      "diesel_eur": 1.539,
+      "gasoline95_eur": 1.496,
+      "source": "European Commission Weekly Oil Bulletin"
     },
     {
       "code": "TR",
       "country": "Türkei",
       "diesel_eur": 1.21,
       "gasoline95_eur": 1.17,
+      "source": "GlobalPetrolPrices.com / EPDK",
       "local_diesel": "TRY 65.22/L",
       "local_gasoline95": "TRY 63.08/L",
-      "last_update": "2026-06-15",
-      "source": "GlobalPetrolPrices.com / EPDK"
+      "last_update": "2026-06-15"
     }
   ]
 }
