@@ -1,16 +1,18 @@
 (() => {
-  const SOURCE_URL = "fuel-prices.json";
+  const LOCAL_SOURCE_URL = "fuel-prices.json";
+  const RAW_SOURCE_URL = "https://raw.githubusercontent.com/nzvdgzygrk-hub/Almanya-T-rkiye-yolculuk/main/fuel-prices.json";
+  const ACTIONS_URL = "https://github.com/nzvdgzygrk-hub/Almanya-T-rkiye-yolculuk/actions/workflows/update-fuel-prices.yml";
   const EU_SOURCE = "https://energy.ec.europa.eu/data-and-analysis/weekly-oil-bulletin_en";
   const FALLBACK = {
     updated_at: null,
     status: "waiting_for_first_update",
     countries: [
-      { code: "DE", country: "Deutschland", diesel_eur: null, gasoline95_eur: null, source: "European Commission Weekly Oil Bulletin" },
-      { code: "AT", country: "Österreich", diesel_eur: null, gasoline95_eur: null, source: "European Commission Weekly Oil Bulletin" },
-      { code: "HU", country: "Ungarn", diesel_eur: null, gasoline95_eur: null, source: "European Commission Weekly Oil Bulletin" },
-      { code: "RO", country: "Rumänien", diesel_eur: null, gasoline95_eur: null, source: "European Commission Weekly Oil Bulletin" },
-      { code: "BG", country: "Bulgarien", diesel_eur: null, gasoline95_eur: null, source: "European Commission Weekly Oil Bulletin" },
-      { code: "TR", country: "Türkei", diesel_eur: null, gasoline95_eur: null, source: "Optional über TURKEY_FUEL_API_URL" }
+      { code: "DE", country: "Deutschland", diesel_eur: null, gasoline95_eur: null },
+      { code: "AT", country: "Österreich", diesel_eur: null, gasoline95_eur: null },
+      { code: "HU", country: "Ungarn", diesel_eur: null, gasoline95_eur: null },
+      { code: "RO", country: "Rumänien", diesel_eur: null, gasoline95_eur: null },
+      { code: "BG", country: "Bulgarien", diesel_eur: null, gasoline95_eur: null },
+      { code: "TR", country: "Türkei", diesel_eur: null, gasoline95_eur: null }
     ]
   };
 
@@ -21,7 +23,7 @@
     const style = document.createElement("style");
     style.id = "fuelWidgetStyles";
     style.textContent = `
-      .fuel-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:end;margin:12px 0}.fuel-toolbar>div{flex:1;min-width:160px}.fuel-price-list{display:grid;gap:8px}.fuel-price-row{display:grid;grid-template-columns:1.1fr .8fr .9fr;gap:8px;align-items:center;border:1px solid var(--line,#e5e7eb);border-radius:14px;padding:10px;background:#fff}.fuel-price-row.best{border-color:#047857;background:#ecfdf5}.fuel-price-country{font-weight:900}.fuel-price-value{font-size:1.05rem;font-weight:900;text-align:right}.fuel-price-badge{justify-self:end;border-radius:999px;padding:5px 8px;font-size:.76rem;background:#f3f4f6;color:#374151}.fuel-price-row.best .fuel-price-badge{background:#047857;color:#fff}.fuel-price-empty{border:1px dashed var(--line,#e5e7eb);border-radius:14px;padding:12px;color:var(--muted,#6b7280);background:#f9fafb}.fuel-source-link{font-size:.86rem;color:var(--muted,#6b7280)}@media(max-width:520px){.fuel-price-row{grid-template-columns:1fr}.fuel-price-value{text-align:left}.fuel-price-badge{justify-self:start}}
+      .fuel-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:end;margin:12px 0}.fuel-toolbar>div{flex:1;min-width:160px}.fuel-price-list{display:grid;gap:8px}.fuel-price-row{display:grid;grid-template-columns:1.1fr .8fr .9fr;gap:8px;align-items:center;border:1px solid var(--line,#e5e7eb);border-radius:14px;padding:10px;background:#fff}.fuel-price-row.best{border-color:#047857;background:#ecfdf5}.fuel-price-country{font-weight:900}.fuel-price-value{font-size:1.05rem;font-weight:900;text-align:right}.fuel-price-badge{justify-self:end;border-radius:999px;padding:5px 8px;font-size:.76rem;background:#f3f4f6;color:#374151}.fuel-price-row.best .fuel-price-badge{background:#047857;color:#fff}.fuel-price-empty{border:1px dashed var(--line,#e5e7eb);border-radius:14px;padding:12px;color:var(--muted,#6b7280);background:#f9fafb}.fuel-source-link{font-size:.86rem;color:var(--muted,#6b7280)}.fuel-info{border:1px solid #bfdbfe;background:#eff6ff;color:#1e3a8a;border-radius:13px;padding:10px;margin:10px 0;font-size:.9rem}.fuel-status{font-size:.88rem;font-weight:700;margin-top:8px}.fuel-status.ok{color:#047857}.fuel-status.warn{color:#b45309}.fuel-status.error{color:#b91c1c}@media(max-width:520px){.fuel-price-row{grid-template-columns:1fr}.fuel-price-value{text-align:left}.fuel-price-badge{justify-self:start}.fuel-toolbar .btn{width:100%}}
     `;
     document.head.appendChild(style);
   }
@@ -44,6 +46,13 @@
     return Number.isFinite(value) && value > 0 ? value : null;
   }
 
+  function setStatus(message, type = "ok") {
+    const status = document.getElementById("fuelReloadStatus");
+    if (!status) return;
+    status.className = `fuel-status ${type}`;
+    status.textContent = message;
+  }
+
   function render() {
     const root = document.getElementById("fuelPricesRoot");
     const meta = document.getElementById("fuelPriceMeta");
@@ -56,10 +65,11 @@
     const valid = rows.filter(row => row.displayPrice !== null);
     const best = valid.length ? Math.min(...valid.map(row => row.displayPrice)) : null;
 
-    meta.innerHTML = `Stand: <strong>${formatDate(priceData.updated_at)}</strong> · nationale Durchschnittspreise, nicht einzelne Tankstelle. <a class="fuel-source-link" href="${EU_SOURCE}" target="_blank" rel="noopener">EU-Quelle</a>`;
+    const dataDate = priceData.data_date ? ` · Datenstand: <strong>${priceData.data_date}</strong>` : "";
+    meta.innerHTML = `Datei aktualisiert: <strong>${formatDate(priceData.updated_at)}</strong>${dataDate} · nationale Durchschnittspreise. <a class="fuel-source-link" href="${EU_SOURCE}" target="_blank" rel="noopener">EU-Quelle</a>`;
 
     if (!valid.length) {
-      root.innerHTML = `<div class="fuel-price-empty">Noch keine Livepreise geladen. Die GitHub Action kann die Datei <strong>fuel-prices.json</strong> automatisch aktualisieren. Für die Türkei braucht man zusätzlich eine freie Quelle/API oder einen manuellen Wert.</div>`;
+      root.innerHTML = `<div class="fuel-price-empty">Noch keine Preiswerte vorhanden. Zuerst über „Neue Daten abrufen“ den GitHub-Workflow starten.</div>`;
       updateHero("–", "Preise noch leer");
       return;
     }
@@ -73,11 +83,13 @@
 
     root.innerHTML = rows.map(row => {
       const isBest = row.displayPrice !== null && row.displayPrice === best;
-      const badge = row.displayPrice === null ? "kein Wert" : (isBest ? "am günstigsten" : "vergleich");
+      const badge = row.displayPrice === null ? "kein Wert" : (isBest ? "am günstigsten" : "Vergleich");
+      const localKey = kind === "gasoline95" ? "local_gasoline95" : "local_diesel";
+      const localText = row[localKey] ? `<div class="muted" style="font-size:.78rem">${row[localKey]}</div>` : "";
       return `
         <div class="fuel-price-row ${isBest ? "best" : ""}">
           <div class="fuel-price-country">${row.country || row.code}</div>
-          <div class="fuel-price-value">${formatPrice(row.displayPrice)}</div>
+          <div class="fuel-price-value">${formatPrice(row.displayPrice)}${localText}</div>
           <div class="fuel-price-badge">${badge}</div>
         </div>
       `;
@@ -100,19 +112,52 @@
     card.innerHTML = `<strong>${title}</strong><span>${subtitle}</span>`;
   }
 
-  async function loadPrices() {
-    const meta = document.getElementById("fuelPriceMeta");
-    if (meta) meta.textContent = "Spritpreise werden geladen ...";
+  async function fetchJson(url) {
+    const response = await fetch(`${url}${url.includes("?") ? "&" : "?"}t=${Date.now()}`, {
+      cache: "no-store",
+      headers: { "Accept": "application/json" }
+    });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return response.json();
+  }
+
+  async function loadPrices(showResult = false) {
+    const oldUpdatedAt = priceData.updated_at || null;
+    const reloadButton = document.getElementById("reloadFuelPrices");
+    if (reloadButton) {
+      reloadButton.disabled = true;
+      reloadButton.textContent = "Lädt …";
+    }
+    setStatus("Preisdatei wird ohne Cache neu geladen …", "warn");
+
     try {
-      const response = await fetch(`${SOURCE_URL}?t=${Date.now()}`, { cache: "no-store" });
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      priceData = await response.json();
+      try {
+        priceData = await fetchJson(RAW_SOURCE_URL);
+      } catch (rawError) {
+        priceData = await fetchJson(LOCAL_SOURCE_URL);
+      }
+      render();
+
+      if (showResult) {
+        const newUpdatedAt = priceData.updated_at || null;
+        if (oldUpdatedAt && newUpdatedAt === oldUpdatedAt) {
+          setStatus("Neu geladen – es liegt aber noch kein neuer Datenstand im GitHub-Repo vor.", "warn");
+        } else {
+          setStatus(`Neu geladen. Stand: ${formatDate(newUpdatedAt)}`, "ok");
+        }
+      } else {
+        setStatus(`Geladen. Stand: ${formatDate(priceData.updated_at)}`, "ok");
+      }
     } catch (error) {
       priceData = FALLBACK;
-      const metaEl = document.getElementById("fuelPriceMeta");
-      if (metaEl) metaEl.textContent = `Spritpreise konnten nicht geladen werden: ${error.message}`;
+      render();
+      setStatus(`Preisdatei konnte nicht geladen werden: ${error.message}`, "error");
+    } finally {
+      if (reloadButton) {
+        reloadButton.disabled = false;
+        reloadButton.textContent = "Preise neu laden";
+      }
     }
-    render();
   }
 
   function insertWidget() {
@@ -126,7 +171,8 @@
     card.id = "fuelPricesCard";
     card.innerHTML = `
       <h3>💸 Spritpreise Länder-Vergleich</h3>
-      <p class="muted" id="fuelPriceMeta">Spritpreise werden geladen ...</p>
+      <p class="muted" id="fuelPriceMeta">Spritpreise werden geladen …</p>
+      <div class="fuel-info"><strong>Unterschied:</strong> „Preise neu laden“ lädt nur den aktuellen Stand aus GitHub. „Neue Daten abrufen“ startet nicht automatisch in der App, sondern öffnet den geschützten GitHub-Workflow.</div>
       <div class="fuel-toolbar">
         <div>
           <label class="input-label" for="fuelKind">Anzeige</label>
@@ -135,10 +181,12 @@
             <option value="gasoline95">Benzin 95</option>
           </select>
         </div>
-        <button class="btn secondary" id="reloadFuelPrices">Aktualisieren</button>
+        <button class="btn secondary" id="reloadFuelPrices">Preise neu laden</button>
+        <a class="btn blue" id="runFuelUpdate" href="${ACTIONS_URL}" target="_blank" rel="noopener">Neue Daten abrufen</a>
       </div>
+      <div id="fuelReloadStatus" class="fuel-status warn">Preisdatei wird geladen …</div>
       <div id="fuelPricesRoot" class="fuel-price-list"></div>
-      <p class="muted">Zum Tanken nur als Orientierung nutzen: EU-Werte sind Länder-Durchschnittspreise. Tankstellen an der Autobahn können teurer sein.</p>
+      <p class="muted">Nur Orientierung: Länder-Durchschnittspreise. Autobahn- und Grenztankstellen können deutlich teurer sein.</p>
     `;
 
     if (title && title.nextSibling) {
@@ -148,8 +196,8 @@
     }
 
     document.getElementById("fuelKind").addEventListener("change", render);
-    document.getElementById("reloadFuelPrices").addEventListener("click", loadPrices);
-    loadPrices();
+    document.getElementById("reloadFuelPrices").addEventListener("click", () => loadPrices(true));
+    loadPrices(false);
   }
 
   if (document.readyState === "loading") {
