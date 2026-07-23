@@ -1,10 +1,10 @@
-const CACHE_NAME = "turkiye-yolculuk-v4";
+const CACHE_NAME = "turkiye-yolculuk-v5";
 const FILES_TO_CACHE = [
   "./",
   "index.html",
   "manifest.json",
-  "fuel-widget.js",
-  "vignette-widget.js"
+  "fuel-widget.js?v=3",
+  "vignette-widget.js?v=2"
 ];
 
 self.addEventListener("install", event => {
@@ -29,11 +29,11 @@ async function injectWidgets(response) {
   const scripts = [];
 
   if (!injected.includes("fuel-widget.js")) {
-    scripts.push('<script src="fuel-widget.js?v=2"></script>');
+    scripts.push('<script src="fuel-widget.js?v=3"></script>');
   }
 
   if (!injected.includes("vignette-widget.js")) {
-    scripts.push('<script src="vignette-widget.js?v=1"></script>');
+    scripts.push('<script src="vignette-widget.js?v=2"></script>');
   }
 
   if (scripts.length) {
@@ -69,7 +69,7 @@ self.addEventListener("fetch", event => {
 
   if (isAppShell) {
     event.respondWith(
-      fetch(event.request)
+      fetch(event.request, { cache: "no-store" })
         .then(response => {
           const copy = response.clone();
           caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
