@@ -1,4 +1,4 @@
-const APP_VERSION = "2026-07-25-1";
+const APP_VERSION = "2026-07-25-2";
 const CACHE_NAME = `turkiye-yolculuk-${APP_VERSION}`;
 const FILES_TO_CACHE = [
   `./?appv=${APP_VERSION}`,
