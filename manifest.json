@@ -3,7 +3,7 @@
   "name": "Türkiye Yolculuk",
   "short_name": "Yolculuk",
   "description": "Private Reise-App für die Fahrt von Velbert nach İzmir und zurück.",
-  "start_url": "./?appv=2026-07-25-4",
+  "start_url": "./?appv=2026-07-25-5",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f6f3ee",
