@@ -1,17 +1,16 @@
-const APP_VERSION = "2026-07-25-4";
+const APP_VERSION = "2026-07-25-5";
 const CACHE_NAME = `turkiye-yolculuk-${APP_VERSION}`;
 const FILES_TO_CACHE = [
   `./?appv=${APP_VERSION}`,
   `index.html?appv=${APP_VERSION}`,
   "manifest.json",
   `fuel-widget.js?v=${APP_VERSION}`,
-  `vignette-widget.js?v=${APP_VERSION}`
+  `vignette-widget.js?v=${APP_VERSION}`,
+  `route-fix-widget.js?v=${APP_VERSION}`
 ];
 
 self.addEventListener("install", event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(FILES_TO_CACHE))
-  );
+  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(FILES_TO_CACHE)));
   self.skipWaiting();
 });
 
@@ -33,6 +32,24 @@ self.addEventListener("activate", event => {
     }
   })());
 });
+
+async function injectScripts(response) {
+  const text = await response.text();
+  let html = text;
+  const scripts = [];
+
+  if (!html.includes("fuel-widget.js")) scripts.push(`<script src="fuel-widget.js?v=${APP_VERSION}"></script>`);
+  if (!html.includes("vignette-widget.js")) scripts.push(`<script src="vignette-widget.js?v=${APP_VERSION}"></script>`);
+  if (!html.includes("route-fix-widget.js")) scripts.push(`<script src="route-fix-widget.js?v=${APP_VERSION}"></script>`);
+
+  if (scripts.length) html = html.replace("</body>", `${scripts.join("")}</body>`);
+
+  return new Response(html, {
+    status: response.status,
+    statusText: response.statusText,
+    headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" }
+  });
+}
 
 async function networkFirst(request, fallbackKeys = []) {
   try {
@@ -61,10 +78,14 @@ self.addEventListener("fetch", event => {
     url.pathname.endsWith("fuel-prices.json") ||
     url.pathname.endsWith("fuel-widget.js") ||
     url.pathname.endsWith("vignette-widget.js") ||
+    url.pathname.endsWith("route-fix-widget.js") ||
     url.pathname.endsWith("manifest.json");
 
   if (isNavigation || isIndex) {
-    event.respondWith(networkFirst(event.request, [`index.html?appv=${APP_VERSION}`, `./?appv=${APP_VERSION}`, "index.html", "./"]));
+    event.respondWith((async () => {
+      const response = await networkFirst(event.request, [`index.html?appv=${APP_VERSION}`, `./?appv=${APP_VERSION}`, "index.html", "./"]);
+      return injectScripts(response);
+    })());
     return;
   }
 
