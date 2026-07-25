@@ -4,6 +4,12 @@
   const RUSE_ROUTE_URL = "https://www.google.com/maps/dir/Velbert/Passau/N%C4%83dlac/Giurgiu/Ruse/Lesovo/Hamzabeyli/%C4%B0zmir/";
   const CALAFAT_ROUTE_URL = "https://www.google.com/maps/dir/Velbert/Passau/N%C4%83dlac/Calafat/Vidin/Lesovo/Hamzabeyli/%C4%B0zmir/";
   const KAPIKULE_ALT_URL = "https://www.google.com/maps/dir/Velbert/Passau/N%C4%83dlac/Giurgiu/Ruse/Kap%C4%B1kule/%C4%B0zmir/";
+  const BRIDGE_STEP_URL = "https://www.google.com/maps/dir/N%C4%83dlac/Giurgiu/Ruse/";
+  const BRIDGE_STEP_BACK_URL = "https://www.google.com/maps/dir/Ruse/Giurgiu/N%C4%83dlac/";
+  const BULGARIA_STEP_URL = "https://www.google.com/maps/dir/Ruse/Veliko+Tarnovo/Lesovo/Hamzabeyli/";
+  const BULGARIA_STEP_BACK_URL = "https://www.google.com/maps/dir/Hamzabeyli/Lesovo/Veliko+Tarnovo/Ruse/";
+  const TURKEY_STEP_URL = "https://www.google.com/maps/dir/Hamzabeyli/%C4%B0zmir/";
+  const TURKEY_STEP_BACK_URL = "https://www.google.com/maps/dir/%C4%B0zmir/Hamzabeyli/";
 
   function addStyles() {
     if (document.getElementById("routeFixStyles")) return;
@@ -22,19 +28,33 @@
     });
   }
 
+  function setParagraph(card, index, html) {
+    const paragraphs = card ? card.querySelectorAll("p") : [];
+    if (paragraphs[index]) paragraphs[index].innerHTML = html;
+  }
+
   function setFirstParagraph(card, html) {
-    const p = card && card.querySelector("p");
-    if (p) p.innerHTML = html;
+    setParagraph(card, 0, html);
   }
 
   function setSecondParagraph(card, html) {
-    const paragraphs = card ? card.querySelectorAll("p") : [];
-    if (paragraphs[1]) paragraphs[1].innerHTML = html;
+    setParagraph(card, 1, html);
   }
 
   function setMapLink(card, href) {
     const link = card && card.querySelector("a[href]");
     if (link) href ? link.href = href : link.removeAttribute("href");
+  }
+
+  function setRouteCard(card, title, text, toll, mapUrl, backUrl) {
+    if (!card) return;
+    const h3 = card.querySelector("h3");
+    if (h3) h3.textContent = title;
+    setParagraph(card, 0, text);
+    setParagraph(card, 1, toll);
+    const links = card.querySelectorAll("a[href]");
+    if (links[0]) links[0].href = mapUrl;
+    if (links[1]) links[1].href = backUrl;
   }
 
   function patchStartCard() {
@@ -80,42 +100,34 @@
     const routeList = document.getElementById("routeList");
     if (!routeList) return;
 
-    Array.from(routeList.querySelectorAll(".card")).forEach(card => {
-      const h3 = card.querySelector("h3");
-      if (!h3) return;
+    const cards = Array.from(routeList.querySelectorAll(".card"));
 
-      if (h3.textContent.includes("Rumänien") || h3.textContent.includes("Calafat") || h3.textContent.includes("Vidin")) {
-        if (h3.textContent.includes("Rumänien") || h3.textContent.includes("Calafat")) {
-          h3.textContent = "Rumänien → Bulgarien: Giurgiu–Ruse oder Calafat–Vidin";
-          const ps = card.querySelectorAll("p");
-          if (ps[0]) ps[0].textContent = "Für Hamzabeyli / Lesovo beide Brücken im Navi prüfen. Giurgiu–Ruse ist jetzt als Hauptvariante, Calafat–Vidin als zweite Variante gespeichert.";
-          if (ps[1]) ps[1].textContent = "Rumänien Rovinieta · Brückenmaut Giurgiu–Ruse oder Calafat–Vidin";
-          const links = card.querySelectorAll("a[href]");
-          if (links[0]) links[0].href = "https://www.google.com/maps/dir/N%C4%83dlac/Giurgiu/Ruse/";
-          if (links[1]) links[1].href = "https://www.google.com/maps/dir/Ruse/Giurgiu/N%C4%83dlac/";
-        }
-      }
+    setRouteCard(
+      cards[2],
+      "Rumänien → Bulgarien: Giurgiu–Ruse oder Calafat–Vidin",
+      "Brückenwahl für Rumänien nach Bulgarien. Für Hamzabeyli / Lesovo ist Giurgiu–Ruse die Hauptvariante; Calafat–Vidin bleibt als zweite Variante gespeichert.",
+      "Rumänien Rovinieta · Brückenmaut Giurgiu–Ruse oder Calafat–Vidin",
+      BRIDGE_STEP_URL,
+      BRIDGE_STEP_BACK_URL
+    );
 
-      if ((h3.textContent.includes("Vidin") && h3.textContent.includes("Kap")) || h3.textContent.includes("Sofia/Plovdiv")) {
-        h3.textContent = "Bulgarien → Hamzabeyli / Lesovo";
-        const ps = card.querySelectorAll("p");
-        if (ps[0]) ps[0].textContent = "Von Ruse oder Vidin weiter Richtung Hamzabeyli / Lesovo. Ziel-Grenze bleibt Hamzabeyli, nicht Kapıkule.";
-        if (ps[1]) ps[1].textContent = "Bulgarien E-Vignette · Grenze Lesovo/Hamzabeyli";
-        const links = card.querySelectorAll("a[href]");
-        if (links[0]) links[0].href = "https://www.google.com/maps/dir/Ruse/Veliko+Tarnovo/Lesovo/Hamzabeyli/";
-        if (links[1]) links[1].href = "https://www.google.com/maps/dir/Hamzabeyli/Lesovo/Veliko+Tarnovo/Ruse/";
-      }
+    setRouteCard(
+      cards[3],
+      "Bulgarien → Hamzabeyli / Lesovo",
+      "Nach der Brücke weiter durch Bulgarien Richtung Lesovo/Hamzabeyli. Das ist die geplante Türkei-Grenze, nicht Kapıkule.",
+      "Bulgarien E-Vignette · Grenze Lesovo/Hamzabeyli",
+      BULGARIA_STEP_URL,
+      BULGARIA_STEP_BACK_URL
+    );
 
-      if (h3.textContent.includes("Kap") && h3.textContent.includes("Izmir")) {
-        h3.textContent = "Hamzabeyli → İzmir";
-        const ps = card.querySelectorAll("p");
-        if (ps[0]) ps[0].textContent = "Türkei-Strecke ab Hamzabeyli bis İzmir. HGS/Autobahnmaut und Pausen einplanen.";
-        if (ps[1]) ps[1].textContent = "Türkei HGS / Otoyol / Brücken je nach Strecke";
-        const links = card.querySelectorAll("a[href]");
-        if (links[0]) links[0].href = "https://www.google.com/maps/dir/Hamzabeyli/%C4%B0zmir/";
-        if (links[1]) links[1].href = "https://www.google.com/maps/dir/%C4%B0zmir/Hamzabeyli/";
-      }
-    });
+    setRouteCard(
+      cards[4],
+      "Hamzabeyli → İzmir",
+      "Türkei-Strecke ab Hamzabeyli bis İzmir. HGS/Autobahnmaut und Pausen einplanen.",
+      "Türkei HGS / Otoyol / Brücken je nach Strecke",
+      TURKEY_STEP_URL,
+      TURKEY_STEP_BACK_URL
+    );
   }
 
   function patchBorders() {
@@ -133,7 +145,7 @@
       } else if (h3.textContent.includes("Hamzabeyli")) {
         h3.textContent = "Alternative: Kapıkule / Kapitan Andreevo";
         setFirstParagraph(card, "Nur als echte Alternative speichern, falls Hamzabeyli/Lesovo laut Navi oder Wartezeit schlechter ist.");
-        setMapLink(card, "https://www.google.com/maps/search/Kap%C4%B1kule+Kapitan+Andreevo+Border+Gate/");
+        setMapLink(card, KAPIKULE_ALT_URL);
       } else if (h3.textContent.includes("Calafat") || h3.textContent.includes("Vidin")) {
         h3.textContent = "🇷🇴 ↔ 🇧🇬 Brücken: Giurgiu–Ruse oder Calafat–Vidin";
         setFirstParagraph(card, "Für Hamzabeyli beide Brücken als Optionen speichern. Giurgiu–Ruse als Hauptvariante, Calafat–Vidin als zweite Variante. Brückenmaut extra einplanen.");
