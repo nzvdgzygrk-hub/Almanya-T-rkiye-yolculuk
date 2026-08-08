@@ -213,7 +213,8 @@
     { id: "hgs", label: "HGS laden" },
     { id: "buca", label: "Buca Vergi" },
     { id: "dask", label: "DASK verlängern" },
-    { id: "turkcell", label: "Turkcell" }
+    { id: "turkcell", label: "Turkcell" },
+    { id: "trafik-ceza", label: "🚦 Trafik ceza kontrol et" }
   ];
 
   function getTaskState() {
