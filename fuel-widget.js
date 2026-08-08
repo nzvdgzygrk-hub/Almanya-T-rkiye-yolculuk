@@ -206,3 +206,126 @@
     insertWidget();
   }
 })();
+
+(() => {
+  const TASK_KEY = "turkiye_yolculuk_tasks_v1";
+  const TASKS = [
+    { id: "hgs", label: "HGS laden" },
+    { id: "buca", label: "Buca Vergi" },
+    { id: "dask", label: "DASK verlängern" },
+    { id: "turkcell", label: "Turkcell" }
+  ];
+
+  function getTaskState() {
+    try {
+      return JSON.parse(localStorage.getItem(TASK_KEY) || "{}") || {};
+    } catch (_) {
+      return {};
+    }
+  }
+
+  function saveTaskState(state) {
+    localStorage.setItem(TASK_KEY, JSON.stringify(state));
+  }
+
+  function addTaskStyles() {
+    if (document.getElementById("turkiyeTaskStyles")) return;
+    const style = document.createElement("style");
+    style.id = "turkiyeTaskStyles";
+    style.textContent = `
+      .turkiye-task-list{display:grid;gap:9px;margin-top:12px}
+      .turkiye-task{display:flex;align-items:center;gap:12px;padding:13px 12px;border:1px solid var(--line,#e5e7eb);border-radius:14px;background:#fff;cursor:pointer;user-select:none}
+      .turkiye-task input{width:24px;height:24px;flex:0 0 auto;accent-color:var(--green,#047857)}
+      .turkiye-task span{font-weight:800;font-size:1rem}
+      .turkiye-task.done{background:#ecfdf5;border-color:#a7f3d0}
+      .turkiye-task.done span{text-decoration:line-through;color:var(--muted,#6b7280)}
+      .turkiye-task-summary{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0 2px}
+      .turkiye-task-count{font-weight:900;color:var(--green,#047857)}
+    `;
+    document.head.appendChild(style);
+  }
+
+  function insertTasksTab() {
+    if (document.getElementById("aufgaben")) return;
+    const nav = document.querySelector(".nav-tabs");
+    const main = document.querySelector("main");
+    if (!nav || !main) return;
+
+    addTaskStyles();
+
+    const button = document.createElement("button");
+    button.className = "tab-btn";
+    button.dataset.tab = "aufgaben";
+    button.textContent = "🇹🇷 Aufgaben";
+    nav.appendChild(button);
+
+    const panel = document.createElement("section");
+    panel.className = "panel";
+    panel.id = "aufgaben";
+    panel.innerHTML = `
+      <div class="section-title"><h2>Aufgaben Türkei</h2><small>vor Ort erledigen</small></div>
+      <div class="card">
+        <div class="check-head">
+          <div>
+            <h3>🇹🇷 To-do-Liste</h3>
+            <p class="muted">Einfach antippen und abhaken. Die Haken bleiben auf diesem Gerät gespeichert.</p>
+          </div>
+        </div>
+        <div class="turkiye-task-summary">
+          <span>Fortschritt</span>
+          <span class="turkiye-task-count" id="turkiyeTaskCount">0 / ${TASKS.length}</span>
+        </div>
+        <div class="progress-wrap"><div class="progress-bar" id="turkiyeTaskProgress"></div></div>
+        <div class="turkiye-task-list" id="turkiyeTaskList"></div>
+        <div class="link-row">
+          <button class="small-btn secondary" id="resetTurkiyeTasks">Haken zurücksetzen</button>
+        </div>
+      </div>
+    `;
+    main.appendChild(panel);
+
+    const state = getTaskState();
+    const list = panel.querySelector("#turkiyeTaskList");
+
+    function renderTasks() {
+      list.innerHTML = TASKS.map(task => {
+        const checked = !!state[task.id];
+        return `<label class="turkiye-task ${checked ? "done" : ""}"><input type="checkbox" data-task-id="${task.id}" ${checked ? "checked" : ""}><span>${task.label}</span></label>`;
+      }).join("");
+
+      const done = TASKS.filter(task => !!state[task.id]).length;
+      panel.querySelector("#turkiyeTaskCount").textContent = `${done} / ${TASKS.length}`;
+      panel.querySelector("#turkiyeTaskProgress").style.width = `${Math.round((done / TASKS.length) * 100)}%`;
+
+      list.querySelectorAll("input[data-task-id]").forEach(input => {
+        input.addEventListener("change", () => {
+          state[input.dataset.taskId] = input.checked;
+          saveTaskState(state);
+          renderTasks();
+        });
+      });
+    }
+
+    panel.querySelector("#resetTurkiyeTasks").addEventListener("click", () => {
+      if (!confirm("Alle Türkei-Aufgaben zurücksetzen?")) return;
+      TASKS.forEach(task => delete state[task.id]);
+      saveTaskState(state);
+      renderTasks();
+    });
+
+    button.addEventListener("click", () => {
+      document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+      document.querySelectorAll(".panel").forEach(item => item.classList.remove("active"));
+      button.classList.add("active");
+      panel.classList.add("active");
+    });
+
+    renderTasks();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", insertTasksTab);
+  } else {
+    insertTasksTab();
+  }
+})();
