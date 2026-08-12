@@ -1,4 +1,4 @@
-const APP_VERSION = "2026-07-25-6";
+const APP_VERSION = "2026-08-12-1";
 const CACHE_NAME = `turkiye-yolculuk-${APP_VERSION}`;
 const FILES_TO_CACHE = [
   `./?appv=${APP_VERSION}`,
@@ -6,7 +6,8 @@ const FILES_TO_CACHE = [
   "manifest.json",
   `fuel-widget.js?v=${APP_VERSION}`,
   `vignette-widget.js?v=${APP_VERSION}`,
-  `route-fix-widget.js?v=${APP_VERSION}`
+  `route-fix-widget.js?v=${APP_VERSION}`,
+  `task-links.js?v=${APP_VERSION}`
 ];
 
 self.addEventListener("install", event => {
@@ -41,6 +42,7 @@ async function injectScripts(response) {
   if (!html.includes("fuel-widget.js")) scripts.push(`<script src="fuel-widget.js?v=${APP_VERSION}"></script>`);
   if (!html.includes("vignette-widget.js")) scripts.push(`<script src="vignette-widget.js?v=${APP_VERSION}"></script>`);
   if (!html.includes("route-fix-widget.js")) scripts.push(`<script src="route-fix-widget.js?v=${APP_VERSION}"></script>`);
+  if (!html.includes("task-links.js")) scripts.push(`<script src="task-links.js?v=${APP_VERSION}"></script>`);
 
   if (scripts.length) html = html.replace("</body>", `${scripts.join("")}</body>`);
 
@@ -79,6 +81,7 @@ self.addEventListener("fetch", event => {
     url.pathname.endsWith("fuel-widget.js") ||
     url.pathname.endsWith("vignette-widget.js") ||
     url.pathname.endsWith("route-fix-widget.js") ||
+    url.pathname.endsWith("task-links.js") ||
     url.pathname.endsWith("manifest.json");
 
   if (isNavigation || isIndex) {
