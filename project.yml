@@ -12,16 +12,24 @@ targets:
       - path: ios-native/Yolculuk
         excludes:
           - Assets.xcassets
-    resources:
       - path: index.html
+        buildPhase: resources
       - path: fuel-prices.json
+        buildPhase: resources
       - path: fuel-widget.js
+        buildPhase: resources
       - path: manifest.json
+        buildPhase: resources
       - path: route-fix-widget.js
+        buildPhase: resources
       - path: sw.js
+        buildPhase: resources
       - path: task-links.js
+        buildPhase: resources
       - path: vignette-widget.js
+        buildPhase: resources
       - path: ios-native/Yolculuk/Assets.xcassets
+        buildPhase: resources
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: de.fatih.yolculuk
