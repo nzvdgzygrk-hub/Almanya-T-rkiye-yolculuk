@@ -1,0 +1,41 @@
+name: Build Yolculuk IPA
+on:
+  workflow_dispatch:
+  push:
+    paths: ['ios-native/**','project.yml','.github/workflows/build-ios-ipa.yml']
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: brew install xcodegen
+      - name: Generate AppIcon
+        run: |
+          python3 -m venv .icon-venv
+          . .icon-venv/bin/activate
+          python -m pip install --quiet pillow
+          mkdir -p ios-native/Yolculuk/Assets.xcassets/AppIcon.appiconset
+          python <<'PY'
+          from PIL import Image,ImageDraw
+          from pathlib import Path
+          import json
+          out=Path('ios-native/Yolculuk/Assets.xcassets/AppIcon.appiconset'); img=Image.new('RGB',(1024,1024),'#c1121f'); d=ImageDraw.Draw(img); d.ellipse((145,145,879,879),outline='white',width=65); d.line((270,670,760,360),fill='white',width=60); d.polygon([(760,360),(650,350),(735,470)],fill='white')
+          specs=[('20x20','2x',40),('20x20','3x',60),('29x29','2x',58),('29x29','3x',87),('40x40','2x',80),('40x40','3x',120),('60x60','2x',120),('60x60','3x',180)]; images=[]
+          for logical,scale,px in specs:
+            fn=f'AppIcon-{logical.replace("x","-")}-{scale}.png'; img.resize((px,px),Image.Resampling.LANCZOS).save(out/fn); images.append({'idiom':'iphone','size':logical,'scale':scale,'filename':fn})
+          img.save(out/'AppIcon-1024.png'); images.append({'idiom':'ios-marketing','size':'1024x1024','scale':'1x','filename':'AppIcon-1024.png'}); (out/'Contents.json').write_text(json.dumps({'images':images,'info':{'author':'xcode','version':1}},indent=2))
+          PY
+      - run: xcodegen generate
+      - name: Build
+        run: xcodebuild -project Yolculuk.xcodeproj -scheme Yolculuk -configuration Release -sdk iphoneos -derivedDataPath "$PWD/build" CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" build
+      - name: Package
+        run: |
+          APP="$PWD/build/Build/Products/Release-iphoneos/Yolculuk.app"
+          test -f "$APP/index.html" && test -f "$APP/fuel-widget.js" && test -f "$APP/Assets.car"
+          mkdir -p ipa/Payload && cp -R "$APP" ipa/Payload/
+          cd ipa && /usr/bin/zip -qry ../Yolculuk-unsigned.ipa Payload
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Yolculuk-iPhone-IPA
+          path: Yolculuk-unsigned.ipa
+          retention-days: 14
