@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-08T17:30:28.963496+00:00",
+  "updated_at": "2026-10-15T15:13:31.610960+00:00",
   "source": "EU: European Commission Weekly Oil Bulletin. Turkey: optional TURKEY_FUEL_API_URL.",
   "source_url": "https://energy.ec.europa.eu/data-and-analysis/weekly-oil-bulletin_en",
   "status": "updated",
@@ -9,36 +9,36 @@
     {
       "code": "DE",
       "country": "Deutschland",
-      "diesel_eur": 2.254,
-      "gasoline95_eur": 2.196,
+      "diesel_eur": 2.27,
+      "gasoline95_eur": 2.214,
       "source": "European Commission Weekly Oil Bulletin"
     },
     {
       "code": "AT",
       "country": "Österreich",
-      "diesel_eur": 2.138,
-      "gasoline95_eur": 1.837,
+      "diesel_eur": 2.162,
+      "gasoline95_eur": 1.865,
       "source": "European Commission Weekly Oil Bulletin"
     },
     {
       "code": "HU",
       "country": "Ungarn",
-      "diesel_eur": 1.928,
-      "gasoline95_eur": 1.726,
+      "diesel_eur": 1.942,
+      "gasoline95_eur": 1.754,
       "source": "European Commission Weekly Oil Bulletin"
     },
     {
       "code": "RO",
       "country": "Rumänien",
-      "diesel_eur": 2.05,
-      "gasoline95_eur": 1.886,
+      "diesel_eur": 2.041,
+      "gasoline95_eur": 1.898,
       "source": "European Commission Weekly Oil Bulletin"
     },
     {
       "code": "BG",
       "country": "Bulgarien",
-      "diesel_eur": 1.893,
-      "gasoline95_eur": 1.663,
+      "diesel_eur": 1.874,
+      "gasoline95_eur": 1.649,
       "source": "European Commission Weekly Oil Bulletin"
     },
     {
